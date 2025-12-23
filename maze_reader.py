@@ -3,7 +3,7 @@ import math
 from time import perf_counter
 
 
-image = img.imread("./mazes/maze_test.png")
+image = img.imread("./mazes/maze3.png")
 dimensions = image.shape
 
 dim_y = dimensions[0]
@@ -21,13 +21,13 @@ directions = [
     [1,1],
 ]
 
-
 #basklass för hörn
 class node:
-    def __init__(self,x,y):
+    def __init__(self,y,x):
         self.neighbors = []
         self.previous = None
         self.accessible = True
+        self.is_path = False
 
         self.x = x
         self.y = y
@@ -50,8 +50,6 @@ def get_color(rgba):
 
 #Struktur för att få hörn från matris: maze[y][x]
 def create_maze_dijk():
-    print(dimensions)
-
     maze = []
     nodes = []
     start = None
@@ -61,7 +59,6 @@ def create_maze_dijk():
         maze.append([])
         for x in range(0,dim_x):
             color = get_color(image[y][x])
-            print(x,y)
             new_node = node_dijk(y,x)
             
             if color == "black":
@@ -78,17 +75,27 @@ def create_maze_dijk():
     for y in range(0,dim_y):
         for x in range(0,dim_x):
             node = maze[y][x]
-            node_pos = [node.y,node.x]
+            if node.accessible == True:
+                node_pos = [node.y,node.x]
+                #print("-----------",node_pos,"----------")
 
-            for direction in directions:
-                new_pos = [node_pos[0] + direction[0],node_pos[1] + direction[1]]
+                for direction in directions:
+                    new_pos = [node_pos[0] + direction[0],node_pos[1] + direction[1]]
 
-                if new_pos[0] > 0 and new_pos[0] <= dim_y - 1 and new_pos[1] > 0 and new_pos[1] <= dim_x - 1:
-                    neighbor = maze[new_pos[0]][new_pos[1]]
-                    if neighbor.accessible:
-                        node.neighbors.append(neighbor)
+                    
+
+                    if new_pos[0] >= 0 and new_pos[0] <= dim_y - 1 and new_pos[1] >= 0 and new_pos[1] <= dim_x - 1:
+                        neighbor = maze[new_pos[0]][new_pos[1]]
+                        if neighbor.accessible == True:
+                            #print(new_pos)
+                            node.neighbors.append(neighbor)
+                #print("------------------------")
+            #else: print("INACCESSIBLE!")
+   
     
     return maze, nodes, start, target
+#create_maze_dijk()
+
 """
 start_time = perf_counter()
 
