@@ -1,6 +1,9 @@
 import matplotlib.image as img
 import math
-image = img.imread("./mazes/maze_test2.png")
+from time import perf_counter
+
+
+image = img.imread("./mazes/maze_test.png")
 dimensions = image.shape
 
 dim_y = dimensions[0]
@@ -47,7 +50,10 @@ def get_color(rgba):
 
 #Struktur för att få hörn från matris: maze[y][x]
 def create_maze_dijk():
+    print(dimensions)
+
     maze = []
+    nodes = []
     start = None
     target = None
 
@@ -55,15 +61,19 @@ def create_maze_dijk():
         maze.append([])
         for x in range(0,dim_x):
             color = get_color(image[y][x])
+            print(x,y)
             new_node = node_dijk(y,x)
             
             if color == "black":
                 new_node.accessible = False
             elif color == "green":
                 start = new_node
+                new_node.distance = 0
             elif color == "red":
                 target = new_node
+            
             maze[y].append(new_node)
+            nodes.append(new_node)
     
     for y in range(0,dim_y):
         for x in range(0,dim_x):
@@ -77,5 +87,18 @@ def create_maze_dijk():
                     neighbor = maze[new_pos[0]][new_pos[1]]
                     if neighbor.accessible:
                         node.neighbors.append(neighbor)
+    
+    return maze, nodes, start, target
+"""
+start_time = perf_counter()
 
-create_maze_dijk()
+def execution_time_print(s,decimal):
+    ms = s * 1000
+    precision = math.pow(10,decimal)
+    ms = math.floor(ms * precision) / precision
+
+    print(f"This program took {ms} ms (milliseconds) to execute!")
+
+execution_time = perf_counter() - start_time
+execution_time_print(execution_time,4)
+"""
