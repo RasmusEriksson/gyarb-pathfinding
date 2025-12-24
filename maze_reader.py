@@ -38,6 +38,16 @@ class node_dijk(node):
         super().__init__(y,x)
         self.distance = math.inf
 
+class node_gbfs(node):
+    def __init__(self,y,x):
+        super().__init__(y,x)
+        self.heuristic = math.inf
+
+    def calculate_h(self,target):
+        x_difference = abs(self.x - target.x)
+        y_difference = abs(self.y - target.y)
+        self.heuristic = math.sqrt(math.pow(x_difference,2) + math.pow(y_difference,2))
+
 def get_color(rgba):
     if rgba[0] == 1 and rgba[1] == 1:
         return "white"
@@ -77,24 +87,58 @@ def create_maze_dijk():
             node = maze[y][x]
             if node.accessible == True:
                 node_pos = [node.y,node.x]
-                #print("-----------",node_pos,"----------")
 
                 for direction in directions:
                     new_pos = [node_pos[0] + direction[0],node_pos[1] + direction[1]]
 
-                    
+                    if new_pos[0] >= 0 and new_pos[0] <= dim_y - 1 and new_pos[1] >= 0 and new_pos[1] <= dim_x - 1:
+                        neighbor = maze[new_pos[0]][new_pos[1]]
+                        if neighbor.accessible == True:
+                            node.neighbors.append(neighbor)
+   
+    
+    return maze, nodes, start, target
+
+def create_maze_gbfs():
+    maze = []
+    nodes = []
+    start = None
+    target = None
+
+    for y in range(0,dim_y):
+        maze.append([])
+        for x in range(0,dim_x):
+            color = get_color(image[y][x])
+            new_node = node_gbfs(y,x)
+            
+            if color == "black":
+                new_node.accessible = False
+            elif color == "green":
+                start = new_node
+            elif color == "red":
+                target = new_node
+            
+            maze[y].append(new_node)
+            nodes.append(new_node)
+    
+    start.calculate_h(target)
+    
+    for y in range(0,dim_y):
+        for x in range(0,dim_x):
+            node = maze[y][x]
+            if node.accessible == True:
+                node_pos = [node.y,node.x]
+
+                for direction in directions:
+                    new_pos = [node_pos[0] + direction[0],node_pos[1] + direction[1]]
 
                     if new_pos[0] >= 0 and new_pos[0] <= dim_y - 1 and new_pos[1] >= 0 and new_pos[1] <= dim_x - 1:
                         neighbor = maze[new_pos[0]][new_pos[1]]
                         if neighbor.accessible == True:
-                            #print(new_pos)
                             node.neighbors.append(neighbor)
-                #print("------------------------")
-            #else: print("INACCESSIBLE!")
    
     
     return maze, nodes, start, target
-#create_maze_dijk()
 
 """
 start_time = perf_counter()

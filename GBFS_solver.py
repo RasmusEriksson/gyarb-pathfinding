@@ -2,7 +2,9 @@ import maze_reader
 import math
 from time import perf_counter
 
-maze, unvisited, start, target = maze_reader.create_maze_dijk()
+maze, unvisited, start, target = maze_reader.create_maze_gbfs()
+
+queue = [start]
 
 def print_maze(current):
     if current:
@@ -25,8 +27,8 @@ def print_maze(current):
                 print_add += "🔲 "
             elif square.is_path:
                 print_add += "🔹 " 
-            elif square.distance != math.inf:
-                value = math.floor(square.distance)
+            elif square.heuristic != math.inf:
+                value = math.floor(square.heuristic)
                 if value < 10:
                     value = "0"+str(value)
                 print_add += str(value)+" "
@@ -42,33 +44,23 @@ def explore_node(node):
     
     #print_maze(node)
     for neighbor in node.neighbors:
-        if neighbor in unvisited:
-            x_difference = abs(node.x - neighbor.x)
-            y_difference = abs(node.y - neighbor.y)
-
-            added_distance = math.sqrt(math.pow(x_difference,2) + math.pow(y_difference,2))
-            new_distance = node.distance + added_distance
-
-            if new_distance < neighbor.distance:
-                neighbor.distance = new_distance
-                neighbor.previous = node
+        if neighbor in unvisited and not neighbor in queue:
+            neighbor.calculate_h(target)
+            neighbor.previous = node
+            queue.append(neighbor)
+    queue.remove(node)
     unvisited.remove(node)
 
 def solve_maze():
-    old_current = None
     current_node = None
 
-    while current_node != target:
-        shortest_distance = math.inf
+    while current_node != target and len(queue) > 0:
+        lowest_heuristic = math.inf
 
-        for node in unvisited:
-            if node.distance < shortest_distance:
+        for node in queue:
+            if node.heuristic < lowest_heuristic:
                 current_node = node
-                shortest_distance = node.distance
-        
-        if current_node == old_current:
-            break
-        old_current = current_node
+                lowest_heuristic = node.heuristic
         
         if current_node and current_node in unvisited:
             explore_node(current_node)
