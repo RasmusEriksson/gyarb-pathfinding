@@ -18,22 +18,24 @@ def print_maze(current):
             
             
             if square == current:
-                print_add += "🔍 "
+                print_add += " 🔍 "
             elif square == target:
-                print_add += "🟥 "
+                print_add += " 🟥 "
             elif square == start:
-                print_add += "🟩 "
+                print_add += " 🟩 "
             elif not square.accessible:
-                print_add += "🔲 "
+                print_add += " 🔲 "
             elif square.is_path:
-                print_add += "🔹 " 
+                print_add += " 🔹 " 
             elif square.heuristic != math.inf:
                 value = math.floor(square.heuristic)
                 if value < 10:
-                    value = "0"+str(value)
+                    value = "  "+str(value)
+                elif value < 100:
+                    value = " "+str(value)
                 print_add += str(value)+" "
             else:
-                print_add += "  "
+                print_add += "    "
             
             row_print += print_add
         print(row_top)
@@ -41,8 +43,6 @@ def print_maze(current):
 
 
 def explore_node(node):
-    
-    #print_maze(node)
     for neighbor in node.neighbors:
         if neighbor in unvisited and not neighbor in queue:
             neighbor.calculate_h(target)
@@ -86,7 +86,7 @@ def execution_time_print(s,decimal):
     precision = math.pow(10,decimal)
     ms = math.floor(ms * precision) / precision
 
-    print(f"This program took {ms} ms (milliseconds) to execute!")
+    print(f"GBFS took {ms} ms (milliseconds) to solve!")
 
 start_time = perf_counter()
 
