@@ -2,7 +2,7 @@ import maze_reader
 import math
 from time import perf_counter
 
-maze, unvisited, start, target = maze_reader.create_maze_dijk()
+maze, unvisited, start, target = None,None,None,None
 
 def print_maze(current):
     if current:
@@ -76,7 +76,6 @@ def solve_maze():
             explore_node(current_node)
 
     if current_node == target:
-        print("Path found!")
 
         path = [current_node]
 
@@ -96,13 +95,26 @@ def execution_time_print(s,decimal):
     precision = math.pow(10,decimal)
     ms = math.floor(ms * precision) / precision
 
-    print(f"Dijkstra's took {ms} ms (milliseconds) to solve!")
+    print(f"Dijkstra's took {ms} ms (milliseconds) to solve on average!")
 
-start_time = perf_counter()
+execution_values = []
+itterations = 100
 
-solve_maze()
+for i in range(0,itterations):
+    maze, unvisited, start, target = maze_reader.create_maze_dijk()
+    start_time = perf_counter()
 
-execution_time = perf_counter() - start_time
-execution_time_print(execution_time,5)
+    solve_maze()
+
+    execution_time = perf_counter() - start_time
+    execution_values.append(execution_time)
+
+
+average = 0
+for value in execution_values:
+    average += value
+average = average/len(execution_values)
+
+execution_time_print(average,5)
 print_maze(None)
 

@@ -3,7 +3,7 @@ import math
 from time import perf_counter
 
 
-image = img.imread("./mazes/maze6.png")
+image = img.imread("./mazes/maze1.png")
 dimensions = image.shape
 
 dim_y = dimensions[0]
